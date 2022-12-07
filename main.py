@@ -40,9 +40,15 @@ bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot)
 
 
+UNKNOWN_USER_TEXT = 'Sorry, I don\'t know you. I won\'t do anything\n( ˘︹˘ )'
+
+
 @dp.message_handler(commands=['start', 'help'])
 async def cmd_help(message: types.Message):
     logging.info(f'[{message.chat.id}/{message.chat.username}] {message.get_command()} command')
+    if message.chat.id != USER_ID:
+        await message.answer(UNKNOWN_USER_TEXT)
+        return
     help_text = 'I\'m Reminder bot. You can set up notification and i will notify you.\n\n' \
                 'Commands:\n' \
                 '# list all notifications\n' \
@@ -61,6 +67,9 @@ async def cmd_help(message: types.Message):
 @dp.message_handler(commands=['list'])
 async def cmd_list(message: types.Message):
     logging.info(f'[{message.chat.id}/{message.chat.username}] /list command')
+    if message.chat.id != USER_ID:
+        await message.answer(UNKNOWN_USER_TEXT)
+        return
     notifications = Notification.get_list()
     str_list = []
     for notification in notifications:
@@ -75,6 +84,9 @@ async def cmd_list(message: types.Message):
 @dp.message_handler(commands=['create'])
 async def cmd_create(message: types.Message):
     logging.info(f'[{message.chat.id}/{message.chat.username}] /create {message.get_args()}')
+    if message.chat.id != USER_ID:
+        await message.answer(UNKNOWN_USER_TEXT)
+        return
     match_result = re_create_agrs.match(message.get_args())
     if match_result is None:
         await message.answer('Can\'t parse arguments\nUse: /create text="<notification text>" cron="<cron>"')
@@ -90,6 +102,9 @@ async def cmd_create(message: types.Message):
 @dp.message_handler(commands=['update'])
 async def cmd_update(message: types.Message):
     logging.info(f'[{message.chat.id}/{message.chat.username}] /update {message.get_args()}')
+    if message.chat.id != USER_ID:
+        await message.answer(UNKNOWN_USER_TEXT)
+        return
     parse_err_text = 'Can\'t parse arguments\nUse one of commands:\n' \
                      '/update id=<id> text="<new notification text>" cron="<new cron>"\n' \
                      '/update id=<id> text="<new notification text>"\n' \
@@ -149,6 +164,9 @@ async def cmd_update(message: types.Message):
 @dp.message_handler(commands=['delete'])
 async def cmd_delete(message: types.Message):
     logging.info(f'[{message.chat.id}/{message.chat.username}] /delete {message.get_args()}')
+    if message.chat.id != USER_ID:
+        await message.answer(UNKNOWN_USER_TEXT)
+        return
     try:
         _id = int(message.get_args())
     except Exception:

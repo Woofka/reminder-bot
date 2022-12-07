@@ -3,7 +3,7 @@ from typing import Optional, List
 from db import PickleDB
 
 
-db = PickleDB('data.pickle')
+db = PickleDB('data/data.pickle')
 
 
 class Notification:
